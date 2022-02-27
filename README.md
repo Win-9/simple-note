@@ -1,2 +1,2 @@
-# simple-note
-https://radiantbeing99.github.io/simple-note/
+# simple-note backend heroku server
+https://noteforu.herokuapp.com/
