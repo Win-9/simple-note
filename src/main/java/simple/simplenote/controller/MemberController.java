@@ -15,7 +15,7 @@ import simple.simplenote.service.MemberService;
 
 
 @Controller
-@RequestMapping("api/members")
+@RequestMapping("/members")
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @CrossOrigin(origins = "*", allowedHeaders = "*")

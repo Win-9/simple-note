@@ -26,7 +26,7 @@ import java.util.List;
 
 
 @Controller
-@RequestMapping("/api/contents")
+@RequestMapping("/contents")
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @CrossOrigin(origins = "*", allowedHeaders = "*")
