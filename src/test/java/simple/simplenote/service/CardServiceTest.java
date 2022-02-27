@@ -13,8 +13,6 @@ import simple.simplenote.domain.contents.CardStatus;
 import simple.simplenote.domain.contents.Text;
 import simple.simplenote.repository.CardRepository;
 
-import java.util.List;
-
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

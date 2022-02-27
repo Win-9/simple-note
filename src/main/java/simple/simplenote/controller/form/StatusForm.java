@@ -1,4 +1,4 @@
-package simple.simplenote.controller.Form;
+package simple.simplenote.controller.form;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
