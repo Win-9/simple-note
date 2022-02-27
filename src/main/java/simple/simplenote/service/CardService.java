@@ -30,10 +30,6 @@ public class CardService {
         return cardRepository.findById(id);
     }
 
-    public Card findByIdForUpdate(Long id){
-        return cardRepository.findById(id);
-    }
-
     public void updateCard(Card card){
         cardRepository.save(card);
     }

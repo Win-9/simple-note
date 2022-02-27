@@ -95,27 +95,23 @@ public class CardController extends HttpServlet {
     }
 
 
-    private Text createText(String title, String des) {
+    private Text createText(int id, String title, String des) {
         Text text = new Text();
+        text.setId(Long.valueOf(id));
         text.setTitle(title);
         text.setDescription(des);
-        cardService.add(text);
+        text.setLastModifiedTime(LocalDateTime.now());
         return text;
     }
 
     @PostMapping("")
     @Transactional(readOnly = false)
     @ResponseBody
-    public String getCard(@RequestBody AddForm addForm) throws JsonProcessingException {
-        Text text = new Text();
-        text.setId(Long.valueOf(addForm.getId()));
-        text.setTitle(addForm.getTitle());
-        text.setDescription(addForm.getDescription());
-        text.setLastModifiedTime(LocalDateTime.now());
+    public String addCard(@RequestBody AddForm addForm) throws JsonProcessingException {
+        Text text = createText(addForm.getId(), addForm.getTitle(), addForm.getDescription());
 
         cardService.add(text);
-        System.out.println("text = " + text);
-
+        log.info("text.title={},text.des={}",text.getTitle(), text.getDescription());
         return objectMapper.writeValueAsString(new StatusForm("Good Received"));
     }
 
@@ -125,14 +121,13 @@ public class CardController extends HttpServlet {
     @Transactional(readOnly = false)
     public String updateDescription(@PathVariable int id,
             @RequestBody UpdateForm updateForm) throws JsonProcessingException {
-        Text text = (Text)cardService.findByIdForUpdate((long) id);
+        Text text = (Text)cardService.findById((long) id);
 
-        System.out.println("text = " + text.getId());
         text.setTitle(updateForm.getTitle());
         text.setDescription(updateForm.getDescription());
         text.setLastModifiedTime(LocalDateTime.now());
 
-        log.info("text.getTitle() = " + text.getTitle());
+        log.info("text.getTitle={}", text.getTitle());
         cardService.updateCard(text);
 
         return objectMapper.writeValueAsString(new StatusForm("Good Received"));
@@ -143,7 +138,7 @@ public class CardController extends HttpServlet {
     @Transactional(readOnly = false)
     @ResponseBody
     public String deleteCard(@PathVariable int id) throws JsonProcessingException {
-        Card findCard = cardService.findByIdForUpdate((long) id);
+        Card findCard = cardService.findById((long) id);
         cardService.removeCard(findCard);
 
         return objectMapper.writeValueAsString(new StatusForm("Good Received"));

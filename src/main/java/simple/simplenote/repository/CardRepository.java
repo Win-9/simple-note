@@ -26,17 +26,8 @@ public class CardRepository {
     }
 
     public Card findById(Long id) {
-        Card card = null;
-        try {
-            card = em.createQuery("select c from Card as c where c.id= :id", Card.class)
-                    .setParameter("id", id)
-                    .getSingleResult();
-        } catch (Exception e) {
-            System.out.println("None Exist Id");
-        }
-        finally {
-            return card;
-        }
+        Card card = em.find(Card.class, id);
+        return card;
     }
 
     public void deleteCard(Card findCard) {
