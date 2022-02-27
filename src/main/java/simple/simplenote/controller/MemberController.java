@@ -1,16 +1,18 @@
 package simple.simplenote.controller;
 
 
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import simple.simplenote.controller.Form.AddUserForm;
-import simple.simplenote.controller.Form.StatusForm;
 import simple.simplenote.domain.Member;
+import simple.simplenote.controller.form.AddUserForm;
+import simple.simplenote.controller.form.StatusForm;
 import simple.simplenote.service.MemberService;
+
 
 @Controller
 @RequestMapping("api/members")
