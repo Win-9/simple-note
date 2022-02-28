@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import simple.simplenote.controller.form.AddForm;
-import simple.simplenote.controller.form.StatusForm;
+import simple.simplenote.controller.form.statusform.StatusForm;
 import simple.simplenote.controller.form.UpdateForm;
 import simple.simplenote.domain.contents.Card;
 import simple.simplenote.domain.contents.Text;

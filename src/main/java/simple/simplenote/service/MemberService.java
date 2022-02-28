@@ -23,6 +23,10 @@ public class MemberService {
         return member.getNickName();
     }
 
+    public Member findByName(String name){
+        return memberRepository.find(name);
+    }
+
     private void validateDuplicatedMember(Member member) {
         Member findMember = memberRepository.find(member.getNickName());
 
