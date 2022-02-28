@@ -19,6 +19,8 @@ public class Member {
     @Id @Column(name = "member_id")
     private String nickName;
 
+    private String passWord;
+
     @OneToMany(mappedBy = "member")
     private List<Card> cards = new ArrayList<>();
 }
