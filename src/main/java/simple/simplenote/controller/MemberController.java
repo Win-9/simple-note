@@ -15,7 +15,18 @@ import simple.simplenote.controller.form.LogInForm;
 import simple.simplenote.controller.form.statusform.LoginStatusForm;
 import simple.simplenote.controller.form.statusform.SignUpStatusForm;
 import simple.simplenote.domain.Member;
+import simple.simplenote.encode.RSA;
+import simple.simplenote.encode.SHA256;
 import simple.simplenote.service.MemberService;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+
 
 
 @Controller
@@ -28,12 +39,12 @@ public class MemberController {
 
     private final ObjectMapper objectMapper;
     private final MemberService memberService;
-
+    private final RSA rsa;
 
     @PostMapping("/sign-in")
     @ResponseBody
     @Transactional(readOnly = false)
-    public ResponseEntity<LoginStatusForm> logInMember(@RequestBody LogInForm logInForm) throws JsonProcessingException {
+    public ResponseEntity<LoginStatusForm> logInMember(@RequestBody LogInForm logInForm) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 
         Member findMember = memberService.findByName(logInForm.getNickname());
         if (findMember == null){
@@ -42,39 +53,49 @@ public class MemberController {
             return new ResponseEntity<>(loginStatusForm, HttpStatus.FORBIDDEN);
         }
 
-        if (!findMember.getPassWord().equals(logInForm.getPassword())){
+        String privateKey = rsa.decode(logInForm.getPassword(), RSA.rsaKeyPair.get("privateKey"));
+
+        if (!(findMember.getPassWord()).equals(SHA256.encrypt(privateKey))){
             LoginStatusForm loginStatusForm =
                     new LoginStatusForm(true, false,"Incorrect Password");
             return new ResponseEntity<>(loginStatusForm, HttpStatus.FORBIDDEN);
         }
 
+
         LoginStatusForm loginStatusForm =
                 new LoginStatusForm(true, true,"Correct Id");
+
         return new ResponseEntity<>(loginStatusForm, HttpStatus.OK);
 
     }
 
+
     @PostMapping("/sign-up")
     @ResponseBody
     @Transactional(readOnly = false)
-    public ResponseEntity<SignUpStatusForm> signUpMember(@RequestBody LogInForm logInForm) throws JsonProcessingException {//회원폼, 로그인폼 동일하기때문에
-
+    public ResponseEntity<SignUpStatusForm> signUpMember(@RequestBody LogInForm logInForm)
+            throws JsonProcessingException, NoSuchAlgorithmException {//회원폼, 로그인폼 동일하기때문에
 
         if (memberService.findByName(logInForm.getNickname()) != null) {
             SignUpStatusForm SignUpStatusForm = new SignUpStatusForm(false,"Duplicated Id");
             return new ResponseEntity<>(SignUpStatusForm, HttpStatus.FORBIDDEN);
         }
 
+        String privateKey = rsa.decode(logInForm.getPassword(), RSA.rsaKeyPair.get("privateKey"));
+        log.info("privateKey={}",privateKey);
+
         log.info("logInMember={}",logInForm.getNickname());
 
         Member signUpMember = new Member();
 
         signUpMember.setNickName(logInForm.getNickname());
-        signUpMember.setPassWord(logInForm.getPassword());
+
+        signUpMember.setPassWord(SHA256.encrypt(privateKey));
 
         memberService.addMember(signUpMember);
-        log.info("memberId={}",signUpMember.getNickName());
+        log.info("memberId={}",signUpMember.getPassWord());
 
         return new ResponseEntity<>(new SignUpStatusForm(true, "Registered"), HttpStatus.OK);
     }
+
 }

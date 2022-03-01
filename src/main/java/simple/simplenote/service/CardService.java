@@ -30,6 +30,7 @@ public class CardService {
         return cardRepository.findById(id);
     }
 
+    @Transactional(readOnly = false)
     public void updateCard(Card card){
         cardRepository.save(card);
     }
