@@ -3,10 +3,12 @@ package simple.simplenote.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import simple.simplenote.domain.Member;
 import simple.simplenote.domain.contents.Card;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 @Repository
@@ -33,4 +35,5 @@ public class CardRepository {
     public void deleteCard(Card findCard) {
         em.remove(findCard);
     }
+
 }

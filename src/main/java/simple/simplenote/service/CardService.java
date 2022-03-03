@@ -5,6 +5,7 @@ package simple.simplenote.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import simple.simplenote.domain.Member;
 import simple.simplenote.domain.contents.Card;
 import simple.simplenote.repository.CardRepository;
 

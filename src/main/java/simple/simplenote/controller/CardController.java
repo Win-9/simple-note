@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import simple.simplenote.controller.form.AddForm;
 import simple.simplenote.controller.form.statusform.StatusForm;
 import simple.simplenote.controller.form.UpdateForm;
+import simple.simplenote.domain.Member;
 import simple.simplenote.domain.contents.Card;
 import simple.simplenote.domain.contents.Text;
 import simple.simplenote.service.CardService;
+import simple.simplenote.service.MemberService;
 
 import javax.servlet.http.HttpServlet;
 import java.time.LocalDateTime;
@@ -35,6 +37,7 @@ public class CardController extends HttpServlet {
 
     private final CardService cardService;
     private ObjectMapper objectMapper = new ObjectMapper();
+    private final MemberService memberService;
 
 
     @Transactional(readOnly = false)
@@ -43,17 +46,18 @@ public class CardController extends HttpServlet {
     public String showCard(@PathVariable Long id) throws JsonProcessingException {
         Card findCard = cardService.findById(id);
         objectMapper.registerModule(new JavaTimeModule());
-        String findResult = objectMapper.writeValueAsString(findCard);
 
-        return findResult;
+        System.out.println(objectMapper.writeValueAsString(findCard));
+
+        return objectMapper.writeValueAsString(findCard);
     }
 
     @ResponseBody
-    @GetMapping("/max_contents")
+    @GetMapping("/max-contents")
     public String showMaxContent() {
         List<Card> cardList = cardService.findAll();
         if (cardList.size() == 0){
-            return 1+"";
+            return 0+"";
         }
 
         Card max = Collections.max(cardList, new Comparator<Card>() {
@@ -66,14 +70,6 @@ public class CardController extends HttpServlet {
         return max.getId() + "";
     }
 
-    /**
-     * contentToc[
-     * {id:1,
-     * title:aaaaa},
-     * ]
-     *
-     * @return
-     */
     @ResponseBody
     @GetMapping("/toc")
     public String showArray() throws JsonProcessingException {
@@ -95,12 +91,13 @@ public class CardController extends HttpServlet {
     }
 
 
-    private Text createText(int id, String title, String des) {
+    private Text createText(int id, String title, String des, Member member) {
         Text text = new Text();
         text.setId(Long.valueOf(id));
         text.setTitle(title);
         text.setDescription(des);
         text.setLastModifiedTime(LocalDateTime.now());
+        text.setMember(member);
         return text;
     }
 
@@ -108,7 +105,8 @@ public class CardController extends HttpServlet {
     @Transactional(readOnly = false)
     @ResponseBody
     public String addCard(@RequestBody AddForm addForm) throws JsonProcessingException {
-        Text text = createText(addForm.getId(), addForm.getTitle(), addForm.getDescription());
+        Member member = memberService.findByName(addForm.getAuthor());
+        Text text = createText(addForm.getId(), addForm.getTitle(), addForm.getDescription(), member);
 
         cardService.add(text);
         log.info("text.title={},text.des={}",text.getTitle(), text.getDescription());
