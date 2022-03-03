@@ -13,8 +13,6 @@ import java.util.Base64;
 import java.util.HashMap;
 
 
-@Controller
-@RequiredArgsConstructor
 @Getter
 public class RSA {
     static final int KEY_SIZE = 2048;
@@ -41,7 +39,7 @@ public class RSA {
     /**
      * 키페어 생성
      */
-    public void createKeypairAsString() {
+    static public void createKeypairAsString() {
         HashMap<String, String> stringKeypair = new HashMap<>();
         try {
             SecureRandom secureRandom = new SecureRandom();
@@ -67,7 +65,7 @@ public class RSA {
     /**
      * 암호화
      */
-    public String encode(String plainData, String stringPublicKey) {
+    static public String encode(String plainData, String stringPublicKey) {
         String encryptedData = null;
         try {
             //평문으로 전달받은 공개키를 공개키객체로 만드는 과정
@@ -92,7 +90,7 @@ public class RSA {
     /**
      * 복호화
      */
-    public String decode(String encryptedData, String stringPrivateKey) {
+    static public String decode(String encryptedData, String stringPrivateKey) {
         String decryptedData = null;
         try {
             //평문으로 전달받은 개인키를 개인키객체로 만드는 과정
