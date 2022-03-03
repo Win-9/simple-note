@@ -1,6 +1,7 @@
 package simple.simplenote.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 import simple.simplenote.domain.contents.Card;
@@ -16,11 +17,14 @@ import java.util.List;
 @Getter
 @Setter
 public class Member {
+
+
     @Id @Column(name = "member_id")
     private String nickName;
 
     private String passWord;
 
     @OneToMany(mappedBy = "member")
+    @JsonManagedReference
     private List<Card> cards = new ArrayList<>();
 }

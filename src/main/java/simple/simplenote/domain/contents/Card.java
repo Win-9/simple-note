@@ -1,6 +1,7 @@
 package simple.simplenote.domain.contents;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
 import simple.simplenote.domain.Member;
@@ -27,6 +28,7 @@ public abstract class Card {
     private LocalDateTime lastModifiedTime;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "member_id")
     private Member member;
 }
