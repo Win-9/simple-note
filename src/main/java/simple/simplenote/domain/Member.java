@@ -1,6 +1,7 @@
 package simple.simplenote.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +26,6 @@ public class Member {
     private String passWord;
 
     @OneToMany(mappedBy = "member")
-    @JsonManagedReference
+    @JsonIgnoreProperties({"member"})
     private List<Card> cards = new ArrayList<>();
 }

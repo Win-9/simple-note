@@ -17,6 +17,7 @@ import simple.simplenote.controller.form.UpdateForm;
 import simple.simplenote.domain.Member;
 import simple.simplenote.domain.contents.Card;
 import simple.simplenote.domain.contents.Text;
+import simple.simplenote.dto.ShowCardDto;
 import simple.simplenote.service.CardService;
 import simple.simplenote.service.MemberService;
 
@@ -45,11 +46,18 @@ public class CardController extends HttpServlet {
     @ResponseBody
     public String showCard(@PathVariable Long id) throws JsonProcessingException {
         Card findCard = cardService.findById(id);
+
         objectMapper.registerModule(new JavaTimeModule());
+        ShowCardDto showCardDto = new ShowCardDto();
 
-        System.out.println(objectMapper.writeValueAsString(findCard));
+        showCardDto.setId(id);
+        showCardDto.setAuthor(findCard.getMember().getNickName());
+        showCardDto.setCardStatus(findCard.getCardStatus());
+        showCardDto.setTitle(findCard.getTitle());
+        showCardDto.setLastModifiedTime(findCard.getLastModifiedTime());
+        showCardDto.setDescription(findCard);
 
-        return objectMapper.writeValueAsString(findCard);
+        return objectMapper.writeValueAsString(showCardDto);
     }
 
     @ResponseBody
@@ -107,6 +115,7 @@ public class CardController extends HttpServlet {
     public String addCard(@RequestBody AddForm addForm) throws JsonProcessingException {
         Member member = memberService.findByName(addForm.getAuthor());
         Text text = createText(addForm.getId(), addForm.getTitle(), addForm.getDescription(), member);
+        member.getCards().add(text);
 
         cardService.add(text);
         log.info("text.title={},text.des={}",text.getTitle(), text.getDescription());
