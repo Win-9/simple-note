@@ -39,27 +39,16 @@ public class MemberController {
 
     private final ObjectMapper objectMapper;
     private final MemberService memberService;
-    private final RSA rsa;
 
     @PostMapping("/sign-in")
     @ResponseBody
     @Transactional(readOnly = false)
-    public ResponseEntity<LoginStatusForm> logInMember(@RequestBody LogInForm logInForm) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+    public ResponseEntity<LoginStatusForm> logInMember(@RequestBody LogInForm logInForm)
+            throws NoSuchAlgorithmException{
 
         Member findMember = memberService.findByName(logInForm.getNickname());
-        if (findMember == null){
-            LoginStatusForm loginStatusForm =
-                    new LoginStatusForm(false, false,"NoneExistId");
-            return new ResponseEntity<>(loginStatusForm, HttpStatus.FORBIDDEN);
-        }
-
-        String privateKey = rsa.decode(logInForm.getPassword(), RSA.rsaKeyPair.get("privateKey"));
-
-        if (!(findMember.getPassWord()).equals(SHA256.encrypt(privateKey))){
-            LoginStatusForm loginStatusForm =
-                    new LoginStatusForm(true, false,"Incorrect Password");
-            return new ResponseEntity<>(loginStatusForm, HttpStatus.FORBIDDEN);
-        }
+        ResponseEntity<LoginStatusForm> loginStatusForm1 = validateLoginInfo(logInForm, findMember);
+        if (loginStatusForm1 != null) return loginStatusForm1;
 
 
         LoginStatusForm loginStatusForm =
@@ -69,19 +58,35 @@ public class MemberController {
 
     }
 
+    private ResponseEntity<LoginStatusForm> validateLoginInfo(LogInForm logInForm, Member findMember)
+            throws NoSuchAlgorithmException {
+        if (findMember == null){
+            LoginStatusForm loginStatusForm =
+                    new LoginStatusForm(false, false,"NoneExistId");
+            return new ResponseEntity<>(loginStatusForm, HttpStatus.FORBIDDEN);
+        }
+
+        String privateKey = RSA.decode(logInForm.getPassword(), RSA.rsaKeyPair.get("privateKey"));
+
+        if (!(findMember.getPassWord()).equals(SHA256.encrypt(privateKey))){
+            LoginStatusForm loginStatusForm =
+                    new LoginStatusForm(true, false,"Incorrect Password");
+            return new ResponseEntity<>(loginStatusForm, HttpStatus.FORBIDDEN);
+        }
+        return null;
+    }
+
 
     @PostMapping("/sign-up")
     @ResponseBody
     @Transactional(readOnly = false)
     public ResponseEntity<SignUpStatusForm> signUpMember(@RequestBody LogInForm logInForm)
-            throws JsonProcessingException, NoSuchAlgorithmException {//회원폼, 로그인폼 동일하기때문에
+            throws NoSuchAlgorithmException {//회원폼, 로그인폼 동일하기때문에
 
-        if (memberService.findByName(logInForm.getNickname()) != null) {
-            SignUpStatusForm SignUpStatusForm = new SignUpStatusForm(false,"Duplicated Id");
-            return new ResponseEntity<>(SignUpStatusForm, HttpStatus.FORBIDDEN);
-        }
+        ResponseEntity<SignUpStatusForm> SignUpStatusForm = validateSignUpInfo(logInForm);
+        if (SignUpStatusForm != null) return SignUpStatusForm;
 
-        String privateKey = rsa.decode(logInForm.getPassword(), RSA.rsaKeyPair.get("privateKey"));
+        String privateKey = RSA.decode(logInForm.getPassword(), RSA.rsaKeyPair.get("privateKey"));
         log.info("privateKey={}",privateKey);
 
         log.info("logInMember={}",logInForm.getNickname());
@@ -96,6 +101,14 @@ public class MemberController {
         log.info("memberId={}",signUpMember.getPassWord());
 
         return new ResponseEntity<>(new SignUpStatusForm(true, "Registered"), HttpStatus.OK);
+    }
+
+    private ResponseEntity<SignUpStatusForm> validateSignUpInfo(LogInForm logInForm) {
+        if (memberService.findByName(logInForm.getNickname()) != null) {
+            SignUpStatusForm SignUpStatusForm = new SignUpStatusForm(false,"Duplicated Id");
+            return new ResponseEntity<>(SignUpStatusForm, HttpStatus.FORBIDDEN);
+        }
+        return null;
     }
 
 }

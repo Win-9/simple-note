@@ -57,6 +57,7 @@ public class CardController extends HttpServlet {
         showCardDto.setLastModifiedTime(findCard.getLastModifiedTime());
         showCardDto.setDescription(findCard);
 
+
         return objectMapper.writeValueAsString(showCardDto);
     }
 

@@ -30,8 +30,8 @@ public class ShowCardDto {
 
     private String author;
 
-    public String setDescription(Card card){
-        return ((Text)card).getDescription();
+    public void setDescription(Card card){
+        description = ((Text)card).getDescription();
     }
 
 }

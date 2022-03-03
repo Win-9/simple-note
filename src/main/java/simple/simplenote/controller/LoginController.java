@@ -23,17 +23,15 @@ import java.util.HashMap;
 @Slf4j
 public class LoginController {
 
-    private final RSA rsa;
 
     @ResponseBody
     @GetMapping("/public-key")
     public String createKey() throws JsonProcessingException {
 
-        rsa.createKeypairAsString();
+        RSA.createKeypairAsString();
 
         StringBuilder sb = new StringBuilder();
         sb.append("{\"PUBLIC_KEY\":").append("\""+RSA.rsaKeyPair.get("publicKey")+"\"}");
-        System.out.println("sb = " + sb);
         return sb.toString();
     }
 }
